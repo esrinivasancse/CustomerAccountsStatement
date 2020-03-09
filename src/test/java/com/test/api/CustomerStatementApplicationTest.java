@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.FileCopyUtils;
 
 import com.opencsv.CSVReader;
@@ -23,6 +24,7 @@ import com.test.api.scheduler.CustomerRecordsCSV;
 import com.test.api.scheduler.CustomerRecordsXML;
 import com.test.api.scheduler.CustomerStatementProcessor;
 
+@SpringBootTest
 public class CustomerStatementApplicationTest {
 
 	private CustomerStatementProcessor customerStatementProcessor;
@@ -34,8 +36,8 @@ public class CustomerStatementApplicationTest {
 		new File("./batch.running").deleteOnExit();
 		new File("./input/records.csv").deleteOnExit();
 		new File("./input/records.xml").deleteOnExit();
-		new File("./output/reports.xml").deleteOnExit();
-		FileCopyUtils.copy(new File("records.csv"), new File("./input/records.csv"));
+		new File("./output/reports.csv").deleteOnExit();
+	    FileCopyUtils.copy(new File("records.csv"), new File("./input/records.csv"));
 		FileCopyUtils.copy(new File("records.xml"), new File("./input/records.xml"));
 		customerStatementProcessor = new CustomerStatementProcessor(customerRecordsCSV, customerRecordsXML);
 	}

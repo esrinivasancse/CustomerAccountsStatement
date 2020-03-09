@@ -3,6 +3,8 @@ package com.test.api.scheduler;
 import static com.test.api.constants.Constants.BATCH_FILE_FLAG_PATH;
 import static com.test.api.constants.Constants.CSV_FILE_OUTPUT_PATH;
 import static com.test.api.constants.Constants.STATUS_FAILED;
+import static com.test.api.constants.Constants.CSV_FILE_PATH;
+import static com.test.api.constants.Constants.XML_FILE_PATH;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,13 +81,26 @@ public class CustomerStatementProcessor {
 		if (!flag.exists()) {
 			try {
 				flag.createNewFile();
-				List<Record> csvRecords = customerRecordsCSV.loadCustomerRecordsFromCsv();
-				List<Record> xmlRecords = customerRecordsXML.loadCustomerRecordsFromXml();
-				allRecords.addAll(csvRecords);
-				allRecords.addAll(xmlRecords);
-				Map<Integer, Integer> referenceNoCountMap = findReferenceNumberCount(allRecords);
-				List<Report> reports = generateFailedRecordsReport(allRecords, referenceNoCountMap);
-				generateCsv(reports);
+				File sourceFile1 = new File(CSV_FILE_PATH);
+				File sourceFile2 = new File(XML_FILE_PATH);
+				if (sourceFile1.exists() && sourceFile2.exists()) {
+					if (sourceFile1.exists()) {
+						List<Record> csvRecords = customerRecordsCSV.loadCustomerRecordsFromCsv();
+						allRecords.addAll(csvRecords);
+						sourceFile1.delete();
+					}
+					if (sourceFile2.exists()) {
+						List<Record> xmlRecords = customerRecordsXML.loadCustomerRecordsFromXml();
+						allRecords.addAll(xmlRecords);
+						sourceFile2.delete();
+					}
+					Map<Integer, Integer> referenceNoCountMap = findReferenceNumberCount(allRecords);
+					List<Report> reports = generateFailedRecordsReport(allRecords, referenceNoCountMap);
+					generateCsv(reports);
+					logger.info("### Process Completed Successfully ###");
+				}else{
+					logger.info("### No Files to Process ###");
+				}
 				flag.delete();
 			} catch (Exception ex) {
 				logger.error("Exception occured while processing : {}", ex.getMessage());
@@ -94,6 +109,7 @@ public class CustomerStatementProcessor {
 			logger.info("### Already one Batch is Running ###");
 		}
 	}
+
 
 	/**
 	 * Generate csv.

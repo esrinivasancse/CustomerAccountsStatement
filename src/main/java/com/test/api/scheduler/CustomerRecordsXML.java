@@ -25,7 +25,7 @@ import com.test.api.models.Record;
  */
 @Component
 public class CustomerRecordsXML {
-	
+
 	/** The logger. */
 	Logger logger = LogManager.getLogger(CustomerRecordsCSV.class);
 
